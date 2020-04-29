@@ -1,0 +1,145 @@
+#!/usr/bin/env node
+
+const commander = require('commander')
+const TomoJS = require('./tomo')
+const pjson = require('./package.json')
+const { prompt, Separator } = require('inquirer')
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+const ethers = require('ethers')
+const dotenv = require('dotenv')
+
+let configPath = path.resolve(process.cwd(), '.env')
+
+let profileDir = path.resolve(require('os').homedir(), '.tomocli')
+if (!fs.existsSync(profileDir)){
+    fs.mkdirSync(profileDir)
+}
+
+if (fs.existsSync(path.resolve(profileDir, 'config'))) {
+    configPath = path.resolve(path.resolve(profileDir, 'config'))
+}
+
+let tomojs = new TomoJS(
+    process.env.ENDPOINT,
+    process.env.USER_PKEY,
+    process.env.CHAIN_ID || 88
+)
+
+function collect(value, previous) {
+    return previous.concat([value]);
+}   
+
+function collectTerms(value, previous) {
+    return previous.concat([parseInt(value)]);
+}   
+
+function parseTradeFee(value, previous) {
+    return parseFloat(value) 
+}       
+            
+commander
+    .version(pjson.version)
+    .allowUnknownOption()
+    .option('-C --config <path>', 'set config path. defaults to $HOME/.tomojs')
+    .description('TomoChain CLI')
+    .action(async (params) => {
+        configPath = params.config || configPath
+        dotenv.config({ path: configPath })
+
+        if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('init') < 0)
+            && (process.argv.indexOf('info') < 0)) {
+            if (!process.env.ENDPOINT || !process.env.USER_PKEY) {
+                console.log('Run `tomo-cli init` to setup environment')
+                process.exit(1)
+            }
+        }
+
+        tomojs = await TomoJS.setProvider(
+            process.env.ENDPOINT,
+            process.env.USER_PKEY
+        )
+    })
+
+if (process.argv.indexOf('--help') < 0 && process.argv.indexOf('-h') < 0) {
+    commander.parseAsync(process.argv).then(() => {
+        run()
+    })
+} else {
+    run()
+}
+
+function run() {
+    commander
+        .command('init')
+        .description('setup/init environment')
+        .option('-p, --password <password>', 'password', '')
+        .option('-k, --keystore <keystore>', 'path to keystore file')
+        .action(async (params) => {
+            const questions = [{
+                type : 'input',
+                name : 'endpoint',
+                message : 'Enter RPC or IPC endpoint...',
+                default: 'https://rpc.tomochain.com'
+            }, {
+                type : 'input',
+                name : 'chainId',
+                message : 'Enter chain Id...',
+                default: '88'
+            }]
+            if (!params.keystore) {
+                questions.push({
+                    type : 'password',
+                    name : 'userPKey',
+                    message : 'Enter user private key (default: generate random pkey)...'
+                })
+            }
+            prompt(questions).then(async answers => {
+                try {
+                    configPath = path.resolve(path.resolve(profileDir, 'config'))
+                    let tomojsPath = path.resolve(configPath)
+                    let address = ''
+
+                    if (params.keystore) {
+                        let keydata = fs.readFileSync(params.keystore);
+                        let json = JSON.parse(keydata);
+                        let wallet = await ethers.Wallet.fromEncryptedJson(JSON.stringify(json), params.password)
+                        answers.userPKey = wallet.privateKey
+                        address = wallet.address
+                    }
+
+                    if (!answers.userPKey) {
+                        let randomWallet = ethers.Wallet.createRandom()
+                        answers.userPKey = randomWallet.privateKey
+                        address = randomWallet.address
+                    } else {
+                        let wallet = new ethers.Wallet(answers.userPKey)
+                        address = wallet.address
+                    }
+                    fs.writeFile(tomojsPath, `ENDPOINT=${answers.endpoint}\nUSER_PKEY=${answers.userPKey}\nUSER_ADDR=${address}\nCHAIN_ID=${answers.chainId || 88}\n`, function (err) {
+                        if (err) throw err;
+                        console.log('Address:', address);
+                        console.log('Saved!');
+                    })
+                } catch(e) {
+                    console.log(e)
+                }
+            })
+        })
+
+    commander
+        .command('info')
+        .description('show environment')
+        .action(async () => {
+            let info = await TomoJS.networkInformation(process.env.ENDPOINT)
+            info.configPath = configPath
+            info.ChainID = info.NetworkId
+            info.ENDPOINT = process.env.ENDPOINT
+            info.USER_ADDR = process.env.USER_ADDR
+            info.USER_PKEY = '******'
+            console.log(info)
+        })
+
+    commander.parse(process.argv)
+}
