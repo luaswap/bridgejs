@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const commander = require('commander')
-const TomoJS = require('./tomo')
+const BridgeJS = require('./bridge')
 const pjson = require('./package.json')
 const { prompt, Separator } = require('inquirer')
 const fs = require('fs')
@@ -12,7 +12,7 @@ const dotenv = require('dotenv')
 
 let configPath = path.resolve(process.cwd(), '.env')
 
-let profileDir = path.resolve(require('os').homedir(), '.tomocli')
+let profileDir = path.resolve(require('os').homedir(), '.bridgecli')
 if (!fs.existsSync(profileDir)){
     fs.mkdirSync(profileDir)
 }
@@ -21,11 +21,7 @@ if (fs.existsSync(path.resolve(profileDir, 'config'))) {
     configPath = path.resolve(path.resolve(profileDir, 'config'))
 }
 
-let tomojs = new TomoJS(
-    process.env.ENDPOINT,
-    process.env.USER_PKEY,
-    process.env.CHAIN_ID || 88
-)
+let bridgejs = new BridgeJS()
 
 function collect(value, previous) {
     return previous.concat([value]);
@@ -42,7 +38,7 @@ function parseTradeFee(value, previous) {
 commander
     .version(pjson.version)
     .allowUnknownOption()
-    .option('-C --config <path>', 'set config path. defaults to $HOME/.tomojs')
+    .option('-C --config <path>', 'set config path. defaults to $HOME/.bridgejs')
     .description('TomoChain CLI')
     .action(async (params) => {
         configPath = params.config || configPath
@@ -56,7 +52,7 @@ commander
             }
         }
 
-        tomojs = await TomoJS.setProvider(
+        bridgejs = await BridgeJS.setProvider(
             process.env.ENDPOINT,
             process.env.USER_PKEY
         )
@@ -80,13 +76,8 @@ function run() {
             const questions = [{
                 type : 'input',
                 name : 'endpoint',
-                message : 'Enter RPC or IPC endpoint...',
-                default: 'https://rpc.tomochain.com'
-            }, {
-                type : 'input',
-                name : 'chainId',
-                message : 'Enter chain Id...',
-                default: '88'
+                message : 'Enter TomoBridge endpoint...',
+                default: 'https://bridge.devnet.tomochain.com'
             }]
             if (!params.keystore) {
                 questions.push({
@@ -98,7 +89,7 @@ function run() {
             prompt(questions).then(async answers => {
                 try {
                     configPath = path.resolve(path.resolve(profileDir, 'config'))
-                    let tomojsPath = path.resolve(configPath)
+                    let bridgejsPath = path.resolve(configPath)
                     let address = ''
 
                     if (params.keystore) {
@@ -117,7 +108,7 @@ function run() {
                         let wallet = new ethers.Wallet(answers.userPKey)
                         address = wallet.address
                     }
-                    fs.writeFile(tomojsPath, `ENDPOINT=${answers.endpoint}\nUSER_PKEY=${answers.userPKey}\nUSER_ADDR=${address}\nCHAIN_ID=${answers.chainId || 88}\n`, function (err) {
+                    fs.writeFile(bridgejsPath, `ENDPOINT=${answers.endpoint}\nUSER_PKEY=${answers.userPKey}\nUSER_ADDR=${address}\n`, function (err) {
                         if (err) throw err;
                         console.log('Address:', address);
                         console.log('Saved!');
@@ -132,9 +123,8 @@ function run() {
         .command('info')
         .description('show environment')
         .action(async () => {
-            let info = await TomoJS.networkInformation(process.env.ENDPOINT)
+            let info = await BridgeJS.networkInformation(process.env.ENDPOINT)
             info.configPath = configPath
-            info.ChainID = info.NetworkId
             info.ENDPOINT = process.env.ENDPOINT
             info.USER_ADDR = process.env.USER_ADDR
             info.USER_PKEY = '******'
