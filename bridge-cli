@@ -131,5 +131,20 @@ function run() {
             console.log(info)
         })
 
+    commander
+        .command('wrap-get-address')
+        .description('get address for wrapping')
+        .requiredOption('-t --token <token>', 'token symbol')
+        .option('-a --address <address>', 'user address')
+        .action(async (params) => {
+            await bridgejs.wrapGetAddress({
+                tokenSymbol: params.token,
+                userAddress: params.address
+            })
+            .then(data => {
+                console.log(data)
+            }).catch(e => console.log(e.message ? e.message : e))
+        })
+
     commander.parse(process.argv)
 }

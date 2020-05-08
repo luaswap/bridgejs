@@ -16,15 +16,41 @@ let network = {}
  * @param {string} pkey - The private key of the wallet
  */
 class BridgeJS {
-    constructor (
-    ) { }
+
+    constructor (config = {}) {
+        this.endpoint = config.endpoint
+
+        let pkey = config.pkey
+
+        if (!pkey) {
+            let randomWallet = ethers.Wallet.createRandom()
+            pkey = randomWallet.privateKey
+        }
+        
+        let rpcEndpoint = (config.blockchain || {}).rpc || 'https://rpc.tomochain.com'
+        if (rpcEndpoint.endsWith('.ipc')) {
+            this.provider = new ethers.providers.IpcProvider(rpcEndpoint)
+        } else {
+            this.provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
+        }
+
+        this.wallet = new ethers.Wallet(pkey, this.provider)
+        this.coinbase = this.wallet.address
+
+    }
 
 	/**
 	 * Initial the SDK
 	 * @param {string} endpoint - The Url to the node
 	 */
-    static setProvider(endpoint = 'https://bridge.tomochain.com') {
-
+    static setProvider(endpoint = 'https://bridge.tomochain.com', pkey = '') {
+        return BridgeJS.networkInformation(endpoint).then((config) => {
+            config.endpoint = endpoint
+            config.pkey = pkey
+            return new BridgeJS(config)
+        }).catch((e) => {
+            throw e
+        })
     }
 
     static networkInformation (endpoint) {
@@ -58,6 +84,41 @@ class BridgeJS {
         })
     }
 
+    async wrapGetAddress ({ tokenSymbol, userAddress = this.coinbase }) {
+        return new Promise(async (resolve, reject) => {
+
+            try {
+                let url = urljoin(this.endpoint, 'api/wrap/getAddress')
+                let body = {
+                    receiveAddress: userAddress,
+                    wrapCoin: tokenSymbol
+                }
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: body
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(body)
+
+                })
+            } catch(e) {
+                return reject(e)
+            }
+        })
+    }
+
 	/**
 	 * Unwrap TRC21 TOKEN
 	 * @param {object} unwrap - The unwrap information
@@ -65,26 +126,7 @@ class BridgeJS {
 	 * @param {string} unwrap.amount - The amount for unwrapping
 	 * @param {string} unwrap.dest - The destination address
 	 */
-    async unwrap ({ tokenAddress, amount, dest }) {
-        try {
-            const voteAmountBN = new BigNumber(amount).multipliedBy(10 ** 18).toString(10)
-            const nonce = this.provider.getTransactionCount(this.coinbase)
-            const gasPrice = await this.provider.getGasPrice()
-
-            let txParams = {
-                value: ethers.utils.hexlify(ethers.utils.bigNumberify(voteAmountBN)),
-                gasPrice: ethers.utils.hexlify(ethers.utils.bigNumberify(gasPrice)),
-                gasLimit: ethers.utils.hexlify(this.gasLimit),
-                chainId: this.chainId,
-                nonce: await nonce
-            }
-
-            const result = await this.contract.functions.vote(node, txParams)
-            return result
-        } catch (error) {
-            throw error
-        }
-    }
+    async unwrap ({ tokenAddress, amount, dest }) { }
 
 }
 
