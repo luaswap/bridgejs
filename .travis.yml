@@ -26,7 +26,7 @@ jobs:
         - npm install -g nexe@3.3.2
       script:
         - nexe -i bridge-cli -t linux-x64 -o bridge-cli.$TRAVIS_TAG.linux-x64 -r ./
-        - nexe -i bridge-cli -t darwin-x64 -o bridge-cli.$TRAVIS_TAG.darwin-x64 -r ./
+        - nexe -b -i bridge-cli -t darwin-x64 -o bridge-cli.$TRAVIS_TAG.darwin-x64 -r ./
         - nexe -i bridge-cli -t win32-x64-6.11.2 -o bridge-cli.$TRAVIS_TAG.win-x64.exe -r ./
       deploy:
         provider: releases

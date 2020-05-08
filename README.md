@@ -10,6 +10,14 @@ npm install --save bridgejs
 ```javascript
 const BridgeJS = require('bridgejs')
 const bridgejs = await BridgeJS.setProvider('https://bridge.tomochain.com')
+
+// wait for new deposit
+let tokenSymbol = 'BTC'
+bridgejs.wrapWatch({ tokenSymbol }).then((ev) => {
+    ev.on('message', (data) => {
+        console.log('new data', data)
+    })
+})
 ```
 
 Or you can use `bridge-cli` binary:

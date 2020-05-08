@@ -159,7 +159,9 @@ class BridgeJS {
                 let it = setInterval(async () => {
                     try {
                         let data = await tomojs.getDepositTransaction({ tokenSymbol })
-                        ev.emit('message', data)
+                        if (data && data.transaction) {
+                            ev.emit('message', data.transaction)
+                        }
                     } catch(e) {
                         clearInterval(it)
                         ev.emit('close')

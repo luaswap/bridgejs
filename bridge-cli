@@ -151,12 +151,12 @@ function run() {
         .description('watch wrap')
         .requiredOption('-t --token <token>', 'token symbol')
         .action(async (params) => {
-            await bridgejs.watchWrap({
+            await bridgejs.wrapWatch({
                 tokenSymbol: params.token
             })
             .then(ev => {
                 ev.on('message', (message) => {
-                    console.log('%s', message)
+                    console.log('%s', JSON.stringify(message))
                 })
             }).catch(e => console.log(e.message ? e.message : e))
         })
