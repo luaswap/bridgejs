@@ -40,7 +40,7 @@ class BridgeJS {
 
     }
 
-	/**
+    /**
 	 * Initial the SDK
 	 * @param {string} endpoint - The Url to the node
 	 */
@@ -150,7 +150,7 @@ class BridgeJS {
         })
     }
 
-	async wrapWatch ({ tokenSymbol }) {
+    async wrapWatch ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             const ev = new events.EventEmitter()
             let tomojs = this
@@ -184,9 +184,9 @@ class BridgeJS {
 
         })
 
-	}
+    }
 
-	/**
+    /**
 	 * Unwrap TRC20 TOKEN
 	 * @param {object} unwrap - The unwrap information
 	 * @param {string} unwrap.tokenAddress - The token address
