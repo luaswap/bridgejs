@@ -1,7 +1,6 @@
 sudo: required
 language: node_js
 node_js:
-  - "8"
   - "10"
   - "12"
 
@@ -46,6 +45,6 @@ stages:
   - name: Audit
   - name: Test
   - name: Npm release
-    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = bridgechain/bridgejs
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/bridgejs
   - name: Github release
-    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = bridgechain/bridgejs
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/bridgejs

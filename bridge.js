@@ -4,6 +4,7 @@ const request = require('request')
 const urljoin = require('url-join');
 const BigNumber = require('bignumber.js')
 const WebSocket = require('ws')
+const events = require('events')
 
 const validatorAddress = '0x0000000000000000000000000000000000000088'
 
@@ -119,8 +120,72 @@ class BridgeJS {
         })
     }
 
+    async getDepositTransaction ({ tokenSymbol }) {
+        return new Promise((resolve, reject) => {
+            try {
+                let url = urljoin(this.endpoint, 'api/wrap/getTransaction/deposit/', tokenSymbol, this.coinbase)
+                let options = {
+                    method: 'GET',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {}
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(body)
+
+                })
+            } catch(e) {
+                return reject(e)
+            }
+        })
+    }
+
+	async wrapWatch ({ tokenSymbol }) {
+        return new Promise((resolve, reject) => {
+            const ev = new events.EventEmitter()
+            let tomojs = this
+
+            function wait () {
+                let it = setInterval(async () => {
+                    try {
+                        let data = await tomojs.getDepositTransaction({ tokenSymbol })
+                        ev.emit('message', data)
+                    } catch(e) {
+                        clearInterval(it)
+                        ev.emit('close')
+                    }
+                }, 2000)
+            }
+
+            ev.addListener('wait', wait)
+
+            ev.on('close', () => { 
+                resolve()
+            })
+
+            ev.on('open', () => {
+                ev.emit('wait')
+                resolve(ev)
+            })
+
+            ev.emit('open')
+
+        })
+
+	}
+
 	/**
-	 * Unwrap TRC21 TOKEN
+	 * Unwrap TRC20 TOKEN
 	 * @param {object} unwrap - The unwrap information
 	 * @param {string} unwrap.tokenAddress - The token address
 	 * @param {string} unwrap.amount - The amount for unwrapping
