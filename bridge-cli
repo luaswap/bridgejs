@@ -47,7 +47,7 @@ commander
         if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('init') < 0)
             && (process.argv.indexOf('info') < 0)) {
             if (!process.env.ENDPOINT || !process.env.USER_PKEY) {
-                console.log('Run `tomo-cli init` to setup environment')
+                console.log('Run `bridge-cli init` to setup environment')
                 process.exit(1)
             }
         }
@@ -158,6 +158,68 @@ function run() {
                 ev.on('message', (message) => {
                     console.log('%s', JSON.stringify(message))
                 })
+            }).catch(e => console.log(e.message ? e.message : e))
+        })
+
+    commander
+        .command('unwrap-watch')
+        .description('watch wrap')
+        .requiredOption('-t --token <token>', 'token symbol')
+        .action(async (params) => {
+            await bridgejs.unwrapWatch({
+                tokenSymbol: params.token
+            })
+            .then(ev => {
+                ev.on('message', (message) => {
+                    console.log('%s', JSON.stringify(message))
+                })
+            }).catch(e => console.log(e.message ? e.message : e))
+        })
+
+    commander
+        .command('unwrap')
+        .description('unwrap token')
+        .requiredOption('-t --token <token>', 'token symbol')
+        .requiredOption('-a --amount <amount>', 'amount')
+        .requiredOption('-d --dest <dest>', 'destination address')
+        .action(async (params) => {
+            await bridgejs.unwrap({
+                tokenSymbol: params.token,
+                amount: params.amount,
+                dest: params.dest
+            })
+            .then(data => {
+                console.log(data)
+            }).catch(e => console.log(e.message ? e.message : e))
+        })
+
+    commander
+        .command('get-wrap-txs')
+        .description('get wrap transactions')
+        .requiredOption('-p --page <page>', 'page number')
+        .requiredOption('-l --limit <limit>', 'limit number')
+        .action(async (params) => {
+            await bridgejs.getWrapTransactions({
+                page: params.page,
+                limit: params.limit
+            })
+            .then(data => {
+                console.log(data)
+            }).catch(e => console.log(e.message ? e.message : e))
+        })
+
+    commander
+        .command('get-unwrap-txs')
+        .description('get unwrap transactions')
+        .requiredOption('-p --page <page>', 'page number')
+        .requiredOption('-l --limit <limit>', 'limit number')
+        .action(async (params) => {
+            await bridgejs.getUnwrapTransactions({
+                page: params.page,
+                limit: params.limit
+            })
+            .then(data => {
+                console.log(data)
             }).catch(e => console.log(e.message ? e.message : e))
         })
 
