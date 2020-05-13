@@ -60,6 +60,7 @@ class BridgeJS {
     /**
 	 * Initial the SDK
 	 * @param {string} endpoint - The Url to the node
+	 * @param {string} pkey - The private key of the coinbase
 	 */
     static setProvider(endpoint = 'https://bridge.tomochain.com', pkey = '') {
         return BridgeJS.networkInformation(endpoint).then((config) => {
