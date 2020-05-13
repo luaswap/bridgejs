@@ -12,7 +12,7 @@ const BridgeJS = require('bridgejs')
 const bridgejs = await BridgeJS.setProvider('https://bridge.tomochain.com')
 
 // get network information
-let info = await BridgeJS.networkInformation(process.env.ENDPOINT)
+let info = await BridgeJS.networkInformation('https://bridge.tomochain.com')
 console.log(info)
 
 // wait for new deposit
