@@ -148,7 +148,7 @@ class BridgeJS {
     /**
      * Get latest deposit transaction
      * @param {Object} wrap The wrap information
-	 * @param {string} wrap.tokenSymbol - The token symbol
+     * @param {string} wrap.tokenSymbol - The token symbol
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
