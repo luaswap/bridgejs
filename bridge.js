@@ -102,7 +102,14 @@ class BridgeJS {
             }
         })
     }
-
+    /**
+     * Get depositing address
+     * @param {object} wrap - The wrap information
+	 * @param {string} wrap.tokenSymbol - The token symbol
+	 * @param {string} wrap.userAddress - The user address
+     * 
+     * @returns {Object} Depositing information object
+     */
     async wrapGetAddress ({ tokenSymbol, userAddress = this.coinbase }) {
         return new Promise(async (resolve, reject) => {
 
@@ -138,6 +145,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get latest deposit transaction
+     * @param {Object} wrap The wrap information
+     * @param {string} wrap.tokenSymbol - The token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getDepositTransaction ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             try {
@@ -168,6 +182,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get latest withdraw transction
+     * @param {Object} unwrap The unwrap information
+     * @param {String} unwrap.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getWithdrawTransaction ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             try {
@@ -198,6 +219,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Watch depositing transaction
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async wrapWatch ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             const ev = new events.EventEmitter()
@@ -233,6 +261,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Watch withdrawal transaction
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async unwrapWatch ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             const ev = new events.EventEmitter()
@@ -268,6 +303,14 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get depositing transactions
+     * @param {Object} object Input object
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getWrapTransactions ({ limit, page }) {
         return new Promise((resolve, reject) => {
             try {
@@ -304,6 +347,14 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get withdrawal transactions
+     * @param {Object} object Input object
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getUnwrapTransactions ({ tokenSymbol, limit, page }) {
         return new Promise((resolve, reject) => {
             try {
@@ -340,6 +391,15 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get depositing and withdrawal transactions filtering by tokenSymbol
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getTransactions ({ tokenSymbol, limit, page }) {
         return new Promise((resolve, reject) => {
             try {

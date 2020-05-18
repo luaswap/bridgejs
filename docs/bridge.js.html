@@ -27,7 +27,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BridgeJS.html">BridgeJS</a><ul class='methods'><li data-type='method'><a href="BridgeJS.html#.setProvider">setProvider</a></li><li data-type='method'><a href="BridgeJS.html#unwrap">unwrap</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BridgeJS.html">BridgeJS</a><ul class='methods'><li data-type='method'><a href="BridgeJS.html#.setProvider">setProvider</a></li><li data-type='method'><a href="BridgeJS.html#getDepositTransaction">getDepositTransaction</a></li><li data-type='method'><a href="BridgeJS.html#getTransactions">getTransactions</a></li><li data-type='method'><a href="BridgeJS.html#getUnwrapTransactions">getUnwrapTransactions</a></li><li data-type='method'><a href="BridgeJS.html#getWithdrawTransaction">getWithdrawTransaction</a></li><li data-type='method'><a href="BridgeJS.html#getWrapTransactions">getWrapTransactions</a></li><li data-type='method'><a href="BridgeJS.html#unwrap">unwrap</a></li><li data-type='method'><a href="BridgeJS.html#unwrapWatch">unwrapWatch</a></li><li data-type='method'><a href="BridgeJS.html#wrapGetAddress">wrapGetAddress</a></li><li data-type='method'><a href="BridgeJS.html#wrapWatch">wrapWatch</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -146,7 +146,14 @@ class BridgeJS {
             }
         })
     }
-
+    /**
+     * Get depositing address
+     * @param {object} wrap - The wrap information
+	 * @param {string} wrap.tokenSymbol - The token symbol
+	 * @param {string} wrap.userAddress - The user address
+     * 
+     * @returns {Object} Depositing information object
+     */
     async wrapGetAddress ({ tokenSymbol, userAddress = this.coinbase }) {
         return new Promise(async (resolve, reject) => {
 
@@ -182,6 +189,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get latest deposit transaction
+     * @param {Object} wrap The wrap information
+	 * @param {string} wrap.tokenSymbol - The token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getDepositTransaction ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             try {
@@ -212,6 +226,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get latest withdraw transction
+     * @param {Object} unwrap The unwrap information
+     * @param {String} unwrap.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getWithdrawTransaction ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             try {
@@ -242,6 +263,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Watch depositing transaction
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async wrapWatch ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             const ev = new events.EventEmitter()
@@ -277,6 +305,13 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Watch withdrawal transaction
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async unwrapWatch ({ tokenSymbol }) {
         return new Promise((resolve, reject) => {
             const ev = new events.EventEmitter()
@@ -312,6 +347,14 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get depositing transactions
+     * @param {Object} object Input object
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getWrapTransactions ({ limit, page }) {
         return new Promise((resolve, reject) => {
             try {
@@ -348,6 +391,14 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get withdrawal transactions
+     * @param {Object} object Input object
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getUnwrapTransactions ({ tokenSymbol, limit, page }) {
         return new Promise((resolve, reject) => {
             try {
@@ -384,6 +435,15 @@ class BridgeJS {
         })
     }
 
+    /**
+     * Get depositing and withdrawal transactions filtering by tokenSymbol
+     * @param {Object} object Input object
+     * @param {String} object.tokenSymbol Token symbol
+     * @param {Number} object.limit Limit number of records per page
+     * @param {Number} object.page Page number
+     * 
+     * @returns {Object} Transaction object(inner and outter networks)
+     */
     async getTransactions ({ tokenSymbol, limit, page }) {
         return new Promise((resolve, reject) => {
             try {
@@ -481,7 +541,7 @@ module.exports = BridgeJS
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Wed May 13 2020 04:23:05 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu May 14 2020 11:30:46 GMT+0700 (+07) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
