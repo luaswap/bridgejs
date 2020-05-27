@@ -9,10 +9,10 @@ npm install --save bridgejs
 
 ```javascript
 const BridgeJS = require('bridgejs')
-const bridgejs = await BridgeJS.setProvider('https://bridge.tomochain.com')
+const bridgejs = await BridgeJS.setProvider()
 
 // get network information
-let info = await BridgeJS.networkInformation('https://bridge.tomochain.com')
+let info = await BridgeJS.networkInformation()
 console.log(info)
 
 // wait for new deposit
@@ -23,6 +23,8 @@ bridgejs.wrapWatch({ tokenSymbol }).then((ev) => {
     })
 })
 ```
+
+Read more [BridgeJS Document](https://tomochain.github.io/bridgejs/BridgeJS.html)
 
 Or you can use `bridge-cli` binary:
 ```

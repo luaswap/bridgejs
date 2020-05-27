@@ -59,8 +59,8 @@ class BridgeJS {
 
     /**
 	 * Initial the SDK
-	 * @param {string} endpoint - The Url to the node
-	 * @param {string} pkey - The private key of the coinbase
+	 * @param {string} [endpoint=https://bridge.tomochain.com] - The Url to the node
+	 * @param {string} [pkey=random] - The private key of the coinbase
 	 */
     static setProvider(endpoint = 'https://bridge.tomochain.com', pkey = '') {
         return BridgeJS.networkInformation(endpoint).then((config) => {
@@ -149,13 +149,14 @@ class BridgeJS {
      * Get latest deposit transaction
      * @param {Object} wrap The wrap information
      * @param {string} wrap.tokenSymbol - The token symbol
+     * @param {string} wrap.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
-    async getDepositTransaction ({ tokenSymbol }) {
+    async getDepositTransaction ({ tokenSymbol, userAddress = this.coinbase }) {
         return new Promise((resolve, reject) => {
             try {
-                let url = urljoin(this.endpoint, 'api/wrap/getTransaction/deposit/', tokenSymbol, this.coinbase)
+                let url = urljoin(this.endpoint, 'api/wrap/getTransaction/deposit/', tokenSymbol, userAddress)
                 let options = {
                     method: 'GET',
                     url: url,
@@ -183,16 +184,17 @@ class BridgeJS {
     }
 
     /**
-     * Get latest withdraw transction
+     * Get latest withdraw transaction
      * @param {Object} unwrap The unwrap information
      * @param {String} unwrap.tokenSymbol Token symbol
+     * @param {string} wrap.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
-    async getWithdrawTransaction ({ tokenSymbol }) {
+    async getWithdrawTransaction ({ tokenSymbol, userAddress = this.coinbase }) {
         return new Promise((resolve, reject) => {
             try {
-                let url = urljoin(this.endpoint, 'api/wrap/getTransaction/withdraw/', tokenSymbol, this.coinbase)
+                let url = urljoin(this.endpoint, 'api/wrap/getTransaction/withdraw/', tokenSymbol, userAddress)
                 let options = {
                     method: 'GET',
                     url: url,
@@ -308,15 +310,16 @@ class BridgeJS {
      * @param {Object} object Input object
      * @param {Number} object.limit Limit number of records per page
      * @param {Number} object.page Page number
+     * @param {string} wrap.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
-    async getWrapTransactions ({ limit, page }) {
+    async getWrapTransactions ({ limit, page, userAddress = this.coinbase }) {
         return new Promise((resolve, reject) => {
             try {
                 let url = urljoin(
                     this.endpoint, 'api/transactions/getWrapTxs/',
-                    `?address=${this.coinbase}`,
+                    `?address=${userAddress}`,
                     `&page=${page}`,
                     `&limit=${limit}`
                 )
@@ -352,15 +355,16 @@ class BridgeJS {
      * @param {Object} object Input object
      * @param {Number} object.limit Limit number of records per page
      * @param {Number} object.page Page number
+     * @param {string} wrap.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
-    async getUnwrapTransactions ({ tokenSymbol, limit, page }) {
+    async getUnwrapTransactions ({ tokenSymbol, limit, page, userAddress = this.coinbase }) {
         return new Promise((resolve, reject) => {
             try {
                 let url = urljoin(
                     this.endpoint, 'api/transactions/getUnwrapTxs/',
-                    `?address=${this.coinbase}`,
+                    `?address=${userAddress}`,
                     `&page=${page}`,
                     `&limit=${limit}`
                 )
@@ -463,7 +467,6 @@ class BridgeJS {
                 txParams
             )
             let check = true, receipt
-            console.log('Verify tx...')
             await sleep(5000)
             while (check) {
                 receipt = await this.provider.getTransactionReceipt(result.hash || '')

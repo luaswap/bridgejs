@@ -77,7 +77,7 @@ function run() {
                 type : 'input',
                 name : 'endpoint',
                 message : 'Enter TomoBridge endpoint...',
-                default: 'https://bridge.devnet.tomochain.com'
+                default: 'https://bridge.tomochain.com'
             }]
             if (!params.keystore) {
                 questions.push({
@@ -196,12 +196,14 @@ function run() {
     commander
         .command('get-wrap-txs')
         .description('get wrap transactions')
-        .requiredOption('-p --page <page>', 'page number')
-        .requiredOption('-l --limit <limit>', 'limit number')
+        .option('-p --page <page>', 'page number')
+        .option('-l --limit <limit>', 'limit number')
+        .option('-a --address <address>', 'user address')
         .action(async (params) => {
             await bridgejs.getWrapTransactions({
-                page: params.page,
-                limit: params.limit
+                page: params.page || 1,
+                limit: params.limit || 10,
+                userAddress: params.address
             })
             .then(data => {
                 console.log(data)
@@ -211,12 +213,14 @@ function run() {
     commander
         .command('get-unwrap-txs')
         .description('get unwrap transactions')
-        .requiredOption('-p --page <page>', 'page number')
-        .requiredOption('-l --limit <limit>', 'limit number')
+        .option('-p --page <page>', 'page number')
+        .option('-l --limit <limit>', 'limit number')
+        .option('-a --address <address>', 'user address')
         .action(async (params) => {
             await bridgejs.getUnwrapTransactions({
-                page: params.page,
-                limit: params.limit
+                page: params.page || 1,
+                limit: params.limit || 10,
+                userAddress: params.address
             })
             .then(data => {
                 console.log(data)
