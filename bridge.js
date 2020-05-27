@@ -187,7 +187,7 @@ class BridgeJS {
      * Get latest withdraw transaction
      * @param {Object} unwrap The unwrap information
      * @param {String} unwrap.tokenSymbol Token symbol
-     * @param {string} wrap.userAddress - The user address
+     * @param {string} unwrap.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
@@ -310,7 +310,7 @@ class BridgeJS {
      * @param {Object} object Input object
      * @param {Number} object.limit Limit number of records per page
      * @param {Number} object.page Page number
-     * @param {string} wrap.userAddress - The user address
+     * @param {string} object.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
@@ -355,7 +355,7 @@ class BridgeJS {
      * @param {Object} object Input object
      * @param {Number} object.limit Limit number of records per page
      * @param {Number} object.page Page number
-     * @param {string} wrap.userAddress - The user address
+     * @param {string} object.userAddress - The user address
      * 
      * @returns {Object} Transaction object(inner and outter networks)
      */
