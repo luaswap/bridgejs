@@ -2,13 +2,13 @@
 ## Install
 Easy to install the package with command (It requires NodeJS 8+):
 ```
-npm install --save bridgejs
+npm install --save tomobridge-sdk
 ```
 
 ## How to use
 
 ```javascript
-const BridgeJS = require('bridgejs')
+const BridgeJS = require('tomobridge-sdk')
 const bridgejs = await BridgeJS.setProvider()
 
 // get network information

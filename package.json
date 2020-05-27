@@ -1,6 +1,6 @@
 {
-    "name": "bridgejs",
-    "version": "0.1.0",
+    "name": "tomobridge-sdk",
+    "version": "0.1.1",
     "description": "JS SDK for TomoBridge",
     "keywords": [
         "tomobridge",
@@ -15,7 +15,7 @@
     },
     "main": "index.js",
     "bin": {
-        "tomo-cli": "tomo-cli"
+        "bridge-cli": "bridge-cli"
     },
     "scripts": {
         "lint": "eslint --cache ./ --ext .js",
